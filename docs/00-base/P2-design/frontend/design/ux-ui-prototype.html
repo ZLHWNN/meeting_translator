@@ -1,0 +1,85 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Meeting Translator — P2 UX Prototype</title>
+  <style>
+    :root { --bg:#f5f7fb; --panel:#fff; --ink:#182230; --muted:#687386; --line:#dce3ee; --brand:#1463df; --live:#087f5b; --warn:#a15c00; --danger:#b42318; }
+    * { box-sizing:border-box; }
+    body { margin:0; font:15px/1.5 system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif; color:var(--ink); background:var(--bg); }
+    main { width:min(980px, calc(100% - 32px)); margin:32px auto 72px; }
+    header { display:flex; justify-content:space-between; gap:16px; align-items:flex-start; margin-bottom:22px; }
+    h1,h2,p { margin-top:0; } h1 { margin-bottom:5px; font-size:30px; } h2 { font-size:18px; margin-bottom:12px; }
+    .muted { color:var(--muted); } .panel { background:var(--panel); border:1px solid var(--line); border-radius:14px; padding:20px; margin-bottom:16px; box-shadow:0 4px 16px #15264d0b; }
+    .toolbar { display:flex; flex-wrap:wrap; gap:10px; align-items:center; }
+    button, select { min-height:42px; border:1px solid var(--line); border-radius:9px; background:#fff; padding:9px 13px; font:inherit; color:inherit; }
+    button { cursor:pointer; } button.primary { background:var(--brand); color:#fff; border-color:var(--brand); font-weight:700; } button:focus-visible, select:focus-visible { outline:3px solid #9cc2ff; outline-offset:2px; }
+    .grid { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:14px; } label { display:grid; gap:6px; font-weight:700; } label span { font-size:13px; }
+    .notice { border-left:4px solid var(--brand); background:#f0f6ff; padding:12px 14px; border-radius:8px; } .notice.warn { border-color:#df8b17; background:#fff8eb; }
+    .status { display:flex; gap:10px; align-items:center; color:var(--live); font-weight:700; } .dot { width:10px; height:10px; border-radius:99px; background:currentColor; }
+    .transcript { display:grid; gap:12px; } .entry { display:grid; grid-template-columns:64px 1fr 1fr; gap:14px; padding:14px 0; border-top:1px solid var(--line); } .time { color:var(--muted); font-variant-numeric:tabular-nums; } .source { color:#253247; } .translation { color:#0b5e48; font-weight:600; }
+    .interim { background:#f7f9fc; border:1px dashed var(--line); padding:12px; color:var(--muted); border-radius:9px; }
+    @media (max-width:700px) { header { display:block; } .grid { grid-template-columns:1fr; } .entry { grid-template-columns:1fr; gap:5px; } }
+  </style>
+</head>
+<body>
+  <main>
+    <header>
+      <div><p class="muted">会议翻译 · Meeting Translator</p><h1>Live meeting translation</h1><p class="muted">English ↔ 简体中文 · Source and translation stay together.</p></div>
+      <button type="button" aria-label="Switch interface language">中文 / EN</button>
+    </header>
+
+    <section class="panel" aria-labelledby="setup-title">
+      <h2 id="setup-title">Start a session</h2>
+      <div class="grid">
+        <label><span>Meeting mode</span><select><option>In-person microphone</option><option>Online tab + microphone</option></select></label>
+        <label><span>Microphone</span><select><option>Default microphone</option><option>Conference Room USB Mic</option></select></label>
+        <label><span>Direction</span><select><option>English → 简体中文</option><option>简体中文 → English</option></select></label>
+        <label><span>Session limit</span><select disabled><option>60 minutes</option></select></label>
+      </div>
+      <p class="notice warn" style="margin-top:16px"><strong>Before you start:</strong> Audio is sent to OpenAI for live transcription and translation. This app does not save audio or transcript content. OpenAI API use may create abuse-monitoring logs retained up to 30 days by default; the configured provider data-control mode is recorded separately.</p>
+      <div class="toolbar"><button class="primary" type="button">Acknowledge and start</button><span class="muted">No account required</span></div>
+    </section>
+
+    <section class="panel" aria-labelledby="live-title">
+      <div class="toolbar" style="justify-content:space-between"><div><h2 id="live-title" style="margin-bottom:2px">Current session</h2><div class="status"><span class="dot"></span>Listening · 00:08</div><div role="status" aria-live="polite" class="muted">Audio is being transcribed</div></div><div class="toolbar"><button type="button">Pause</button><button type="button">Stop</button><button type="button">Copy transcript</button><button type="button">Return to live</button></div></div>
+      <div class="notice" style="margin:16px 0"><strong>Direction:</strong> English → 简体中文 <button type="button" style="float:right;min-height:32px;padding:4px 8px">Switch</button></div>
+      <div class="transcript" aria-label="Transcript">
+        <article class="entry"><time class="time">00:02</time><div class="source"><strong>English</strong><br>Let’s confirm the launch date and owners.</div><div class="translation"><strong>简体中文</strong><br>我们确认一下发布日期和负责人。</div></article>
+        <article class="entry"><time class="time">00:06</time><div class="source"><strong>English</strong><br>We will send the draft by Friday.</div><div class="translation"><strong>简体中文</strong><br>我们会在周五之前发送草案。</div></article>
+        <div class="interim" aria-live="polite"><strong>Listening:</strong> We are reviewing the next…</div>
+      </div>
+    </section>
+
+    <section class="panel" aria-labelledby="states-title">
+      <h2 id="states-title">Required states</h2>
+      <div class="grid">
+        <div class="notice"><strong>Paused:</strong> Audio capture paused. Resume or stop.</div>
+        <div class="notice warn"><strong>Translation unavailable:</strong> Source retained. Retry translation.</div>
+        <div class="notice warn"><strong>Online capture unavailable:</strong> Select a tab with audio or use In-person mode.</div>
+        <div class="notice"><strong>Reconnect:</strong> Start a new session; finalized entries remain visible until leaving.</div>
+        <div class="notice warn"><strong>Session expired:</strong> Stop state is shown and no new audio is accepted.</div>
+        <div class="notice"><strong>中文界面:</strong> <button type="button">暂停</button> <button type="button">停止</button> <button type="button">回到最新</button><br><span class="muted">正在转写音频 · 翻译失败，可重试</span></div>
+      </div>
+      <p class="muted" style="margin:16px 0 0">When the transcript is scrolled away from the live edge, auto-scroll pauses and a Return to live action appears.</p>
+    </section>
+
+    <section class="panel" lang="zh-Hans" aria-labelledby="zh-screen-title">
+      <h2 id="zh-screen-title">实时会议翻译</h2>
+      <p class="muted">English ↔ 简体中文 · 原文和译文一起显示。</p>
+      <div class="grid">
+        <label><span>会议模式</span><select><option>现场麦克风</option><option>在线标签页 + 麦克风</option></select></label>
+        <label><span>麦克风</span><select><option>默认麦克风</option><option>会议室 USB 麦克风</option></select></label>
+        <label><span>翻译方向</span><select><option>English → 简体中文</option><option>简体中文 → English</option></select></label>
+        <label><span>会话时长</span><select disabled><option>60 分钟</option></select></label>
+      </div>
+      <p class="notice warn" style="margin-top:16px"><strong>开始前请注意：</strong>实时音频会发送到 OpenAI，用于转写和翻译。本应用不会保存音频或会议文字。OpenAI API 默认可能保留最长 30 天的滥用监控日志；供应商数据控制设置会单独记录。</p>
+      <div class="toolbar"><button class="primary" type="button">确认并开始</button><button type="button">中文 / EN</button></div>
+      <div class="notice" style="margin-top:16px"><strong>当前会话 · 正在聆听</strong><br>方向：English → 简体中文<br><button type="button">暂停</button> <button type="button">继续</button> <button type="button">停止</button> <button type="button">复制会议记录</button> <button type="button">回到最新</button></div>
+      <div class="entry"><time class="time">00:08</time><div class="source"><strong>原文</strong><br>我们确认一下发布日期和负责人。</div><div class="translation"><strong>译文</strong><br>Let’s confirm the launch date and owners.</div></div>
+      <div class="grid"><div class="notice"><strong>暂停：</strong>音频采集已暂停。可以继续或停止。</div><div class="notice warn"><strong>翻译不可用：</strong>原文已保留。可以重试翻译。</div><div class="notice warn"><strong>在线采集不可用：</strong>请选择包含音频的标签页，或使用现场模式。</div><div class="notice warn"><strong>会话已过期：</strong>不会再接受新的音频。</div></div>
+    </section>
+  </main>
+</body>
+</html>

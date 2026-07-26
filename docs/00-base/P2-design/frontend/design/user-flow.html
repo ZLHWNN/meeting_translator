@@ -1,0 +1,17 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Meeting Translator — User Flow</title>
+  <style>body{font:15px/1.5 system-ui,sans-serif;background:#f6f8fb;color:#172033;margin:0}.wrap{max-width:920px;margin:36px auto;padding:0 20px}.flow{display:grid;gap:12px}.step{background:#fff;border:1px solid #dbe3ef;border-radius:12px;padding:16px 18px;box-shadow:0 3px 12px #1720330a}.num{display:inline-grid;place-items:center;width:28px;height:28px;border-radius:99px;background:#1463df;color:white;font-weight:700;margin-right:8px}.arrow{text-align:center;color:#1463df;font-size:22px}.gate{border-left:4px solid #d97706;background:#fff8eb}.error{border-left:4px solid #b42318;background:#fff4f2}.done{border-left:4px solid #087f5b;background:#effbf5}code{background:#eef3fa;border-radius:4px;padding:2px 5px}</style>
+</head>
+<body><div class="wrap"><h1>Meeting Translator user flow</h1><p>Desktop Chrome/Edge · in-person microphone or online tab plus microphone · English ↔ 简体中文</p><div class="flow">
+  <div class="step"><span class="num">1</span><strong>Open app</strong><br>Choose English/中文 interface. No account is requested.</div><div class="arrow">↓</div>
+  <div class="step"><span class="num">2</span><strong>Configure source</strong><br>Select In-person microphone or Online tab + microphone, choose the microphone, and choose translation direction.</div><div class="arrow">↓</div>
+  <div class="step gate"><span class="num">3</span><strong>Acknowledge cloud processing</strong><br>Explain that live audio is sent to OpenAI and that this app does not save audio or transcript content. State that default <code>/v1/realtime</code> abuse-monitoring logs may be retained up to 30 days, with configured provider controls recorded separately. Only after acknowledgement request browser permissions.</div><div class="arrow">↓</div>
+  <div class="step"><span class="num">4</span><strong>Start capture</strong><br>Normalize audio to one stream. Online mode mixes selected tab audio and local microphone. Establish a short-lived server session and authenticated WebSocket subprotocol.</div><div class="arrow">↓</div>
+  <div class="step"><span class="num">5</span><strong>Live translation</strong><br>Client VAD opens an utterance, streams 20 ms PCM frames, and commits after 650 ms of silence. Show interim source text; on completion show relative timestamp, source text, and natural target translation.</div><div class="arrow">↓</div>
+  <div class="step"><span class="num">6</span><strong>Control the session</strong><br>Pause/resume capture, switch direction for the next utterance after acknowledgement, scroll through entries, return to live, or copy source/translation pairs. Backpressure pauses capture rather than dropping audio.</div><div class="arrow">↓</div>
+  <div class="step error"><span class="num">7</span><strong>Recover failures</strong><br>Show an actionable permission, capture, connection, or provider error. Preserve finalized source text. Retry translation by resubmitting source text/context without retransmitting audio; reconnect starts a new session.</div><div class="arrow">↓</div>
+  <div class="step done"><span class="num">8</span><strong>Stop or expire</strong><br>Flush an active utterance for up to two seconds, close the provider stream, discard server memory, and return to configuration. Refresh or tab close may discard the active transcript.</div>
+</div></div></body></html>

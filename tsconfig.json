@@ -1,0 +1,16 @@
+{
+  "compilerOptions": {
+    "target": "ES2022",
+    "module": "Node16",
+    "moduleResolution": "Node16",
+    "jsx": "react-jsx",
+    "strict": true,
+    "esModuleInterop": true,
+    "forceConsistentCasingInFileNames": true,
+    "skipLibCheck": true,
+    "outDir": "dist-ts",
+    "rootDir": ".",
+    "types": ["node", "ws"]
+  },
+  "include": ["shared/**/*.ts", "server/**/*.ts", "client/**/*.ts"]
+}

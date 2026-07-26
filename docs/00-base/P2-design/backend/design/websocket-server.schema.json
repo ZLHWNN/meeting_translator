@@ -1,0 +1,18 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://meeting-translator.local/protocol/v1/websocket-server.schema.json",
+  "title": "Meeting Translator WebSocket server messages v1",
+  "oneOf": [
+    { "$ref": "./websocket-protocol.schema.json#/$defs/sessionReady" },
+    { "$ref": "./websocket-protocol.schema.json#/$defs/commandAck" },
+    { "$ref": "./websocket-protocol.schema.json#/$defs/sessionState" },
+    { "$ref": "./websocket-protocol.schema.json#/$defs/transcriptInterim" },
+    { "$ref": "./websocket-protocol.schema.json#/$defs/transcriptFinal" },
+    { "$ref": "./websocket-protocol.schema.json#/$defs/translationPending" },
+    { "$ref": "./websocket-protocol.schema.json#/$defs/translationCompleted" },
+    { "$ref": "./websocket-protocol.schema.json#/$defs/translationFailed" },
+    { "$ref": "./websocket-protocol.schema.json#/$defs/backpressure" },
+    { "$ref": "./websocket-protocol.schema.json#/$defs/error" },
+    { "$ref": "./websocket-protocol.schema.json#/$defs/sessionCompleted" }
+  ]
+}

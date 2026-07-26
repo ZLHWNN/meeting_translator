@@ -1,0 +1,134 @@
+version: 1
+purpose: >-
+  Fixed general-business English/Mandarin utterances for repeatable latency and
+  human semantic-quality review. Exact wording may vary; meaning constraints
+  are the acceptance oracle.
+review:
+  minimumCases: 20
+  criticalErrorDefinition:
+    - reverses the requested action or decision
+    - changes a date, time, quantity, owner, or negation
+    - omits a material constraint or deadline
+    - invents an action, person, or commitment
+  passRule: no critical errors; every case preserves its required meaning elements
+cases:
+  - id: biz-01
+    sourceLanguage: en
+    targetLanguage: zh
+    source: "Let's confirm the launch date and owners."
+    expectedMeaning: "Confirm the launch date and the people responsible for the work."
+    requiredElements: [confirm, launch-date, owners]
+  - id: biz-02
+    sourceLanguage: en
+    targetLanguage: zh
+    source: "We will send the draft by Friday."
+    expectedMeaning: "The draft will be sent no later than Friday."
+    requiredElements: [draft, send, Friday-deadline]
+  - id: biz-03
+    sourceLanguage: en
+    targetLanguage: zh
+    source: "Please do not publish this until legal approves it."
+    expectedMeaning: "Publication must not happen before legal approval."
+    requiredElements: [negation, publish, legal-approval-prerequisite]
+  - id: biz-04
+    sourceLanguage: en
+    targetLanguage: zh
+    source: "The budget increased by 15 percent, from 80,000 to 92,000 dollars."
+    expectedMeaning: "The budget changed from 80,000 dollars to 92,000 dollars, an increase of 15 percent."
+    requiredElements: [increase, 15-percent, 80000, 92000, dollars]
+  - id: biz-05
+    sourceLanguage: en
+    targetLanguage: zh
+    source: "Maya owns the customer migration, and Leo owns the dashboard."
+    expectedMeaning: "Maya is responsible for customer migration; Leo is responsible for the dashboard."
+    requiredElements: [Maya-migration, Leo-dashboard, ownership]
+  - id: biz-06
+    sourceLanguage: en
+    targetLanguage: zh
+    source: "If the API is still unstable tomorrow, we will postpone the pilot by one week."
+    expectedMeaning: "An unstable API tomorrow causes a one-week pilot delay."
+    requiredElements: [condition, API-unstable, tomorrow, postpone, one-week]
+  - id: biz-07
+    sourceLanguage: zh
+    targetLanguage: en
+    source: "我们需要在周三之前确认供应商。"
+    expectedMeaning: "The supplier must be confirmed before Wednesday."
+    requiredElements: [supplier, confirm, Wednesday-deadline]
+  - id: biz-08
+    sourceLanguage: zh
+    targetLanguage: en
+    source: "请把风险登记表发给所有项目负责人。"
+    expectedMeaning: "Send the risk register to all project owners."
+    requiredElements: [send, risk-register, all-project-owners]
+  - id: biz-09
+    sourceLanguage: zh
+    targetLanguage: en
+    source: "这个版本不支持离线模式，但支持浏览器标签页音频。"
+    expectedMeaning: "This version does not support offline processing, but it supports browser-tab audio."
+    requiredElements: [not-supported, offline-processing, supported, browser-tab-audio]
+  - id: biz-10
+    sourceLanguage: zh
+    targetLanguage: en
+    source: "如果测试失败，我们不会在今天发布。"
+    expectedMeaning: "If the tests fail, we will not release today."
+    requiredElements: [condition, tests-fail, negation, no-release, today]
+  - id: biz-11
+    sourceLanguage: en
+    targetLanguage: zh
+    source: "The next review is on March 18 at 10:30 a.m. Singapore time."
+    expectedMeaning: "The next review occurs on March 18 at 10:30 a.m. Singapore time."
+    requiredElements: [review, March-18, 10:30-am, Singapore-time]
+  - id: biz-12
+    sourceLanguage: zh
+    targetLanguage: en
+    source: "我们同意先完成核心翻译功能，再考虑录音和多人协作。"
+    expectedMeaning: "We agree to finish the core translation features before considering recording and multi-user collaboration."
+    requiredElements: [agreement, core-translation-first, recording-deferred, collaboration-deferred]
+  - id: biz-13
+    sourceLanguage: en
+    targetLanguage: zh
+    source: "The support team will monitor the rollout for the first 48 hours."
+    expectedMeaning: "The support team will monitor the rollout during the first 48 hours."
+    requiredElements: [support-team, monitor, rollout, 48-hours]
+  - id: biz-14
+    sourceLanguage: en
+    targetLanguage: zh
+    source: "We have not approved the vendor yet."
+    expectedMeaning: "The vendor is still not approved."
+    requiredElements: [negation, vendor, not-approved]
+  - id: biz-15
+    sourceLanguage: en
+    targetLanguage: zh
+    source: "Can you move the customer interview from Tuesday to Thursday?"
+    expectedMeaning: "Request to reschedule the customer interview from Tuesday to Thursday."
+    requiredElements: [request, customer-interview, Tuesday, Thursday]
+  - id: biz-16
+    sourceLanguage: en
+    targetLanguage: zh
+    source: "The first release supports English and Mandarin, but not offline processing."
+    expectedMeaning: "The first release supports English and Mandarin and does not support processing without internet."
+    requiredElements: [first-release, English, Mandarin, not-offline-processing]
+  - id: biz-17
+    sourceLanguage: zh
+    targetLanguage: en
+    source: "请不要删除这个测试环境，直到我们完成验收。"
+    expectedMeaning: "Do not delete this test environment until acceptance is complete."
+    requiredElements: [negation, do-not-delete, test-environment, acceptance-prerequisite]
+  - id: biz-18
+    sourceLanguage: zh
+    targetLanguage: en
+    source: "这个问题不会阻止本周发布，但下个版本必须修复。"
+    expectedMeaning: "This issue will not block this week's release, but must be fixed in the next version."
+    requiredElements: [not-blocking, this-week-release, must-fix, next-version]
+  - id: biz-19
+    sourceLanguage: zh
+    targetLanguage: en
+    source: "预算上限是每月一千美元，不能超过这个数。"
+    expectedMeaning: "The budget cap is 1,000 dollars per month and must not be exceeded."
+    requiredElements: [budget-cap, 1000-dollars, monthly, negation]
+  - id: biz-20
+    sourceLanguage: zh
+    targetLanguage: en
+    source: "如果客户今天确认，我们明天就可以开始实施。"
+    expectedMeaning: "If the customer confirms today, implementation can start tomorrow."
+    requiredElements: [condition, customer-confirms, today, implementation, tomorrow]

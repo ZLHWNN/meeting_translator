@@ -1,0 +1,29 @@
+{
+  "name": "meeting-translator",
+  "private": true,
+  "version": "0.1.0",
+  "type": "commonjs",
+  "scripts": {
+    "build": "tsc -p tsconfig.json && vite build",
+    "client:build": "vite build",
+    "dev": "vite",
+    "typecheck": "tsc -p tsconfig.json --noEmit",
+    "test": "npm run build && node --test dist-ts/server/src/session/sessionStore.test.js dist-ts/server/src/session/utteranceCoordinator.test.js dist-ts/server/src/providers/openaiRealtimeWhisper.test.js dist-ts/server/src/providers/geminiProviders.test.js dist-ts/server/src/providers/translationProvider.test.js dist-ts/client/src/audio/utteranceVAD.test.js dist-ts/client/src/audio/pcm.test.js dist-ts/client/src/audio/backpressure.test.js dist-ts/client/src/capture/displayCapture.test.js",
+    "start": "node --env-file-if-exists=.env dist-ts/server/src/main.js"
+  },
+  "dependencies": {
+    "fastify": "^5.4.0",
+    "react": "^19.0.0",
+    "react-dom": "^19.0.0",
+    "ws": "^8.18.0"
+  },
+  "devDependencies": {
+    "@types/node": "^22.10.0",
+    "@types/react": "^19.0.0",
+    "@types/react-dom": "^19.0.0",
+    "@types/ws": "^8.5.13",
+    "@vitejs/plugin-react": "^4.3.4",
+    "typescript": "^5.7.2",
+    "vite": "^6.0.0"
+  }
+}

@@ -1,0 +1,178 @@
+openapi: 3.1.0
+info:
+  title: Meeting Translator Session API
+  version: 1.0.0
+  description: >-
+    Anonymous, ephemeral session setup for the Meeting Translator MVP. Runtime
+    audio and live events use the versioned WebSocket protocol below.
+servers:
+  - url: http://localhost:3000
+paths:
+  /health:
+    get:
+      operationId: getHealth
+      responses:
+        '200':
+          description: Service is ready.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HealthResponse'
+  /v1/sessions:
+    post:
+      operationId: createSession
+      summary: Create an anonymous ephemeral meeting session
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateSessionRequest'
+      responses:
+        '201':
+          description: Session created.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CreateSessionResponse'
+        '400':
+          description: Invalid mode, language direction, or request.
+        '429':
+          description: Session limit or local abuse guard reached.
+components:
+  schemas:
+    HealthResponse:
+      type: object
+      required: [status, protocolVersion]
+      properties:
+        status:
+          type: string
+          enum: [ok]
+        protocolVersion:
+          type: string
+          example: '1'
+    CreateSessionRequest:
+      type: object
+      additionalProperties: false
+      required: [mode, direction]
+      properties:
+        mode:
+          type: string
+          enum: [in-person, online]
+        direction:
+          type: string
+          enum: [en-to-zh, zh-to-en]
+    CreateSessionResponse:
+      type: object
+      additionalProperties: false
+      required: [sessionId, sessionToken, websocketUrl, expiresAt, maxDurationSeconds]
+      properties:
+        sessionId:
+          type: string
+        sessionToken:
+          type: string
+        websocketUrl:
+          type: string
+          format: uri-reference
+        expiresAt:
+          type: string
+          format: date-time
+        maxDurationSeconds:
+          type: integer
+          const: 3600
+x-websocket:
+  path: /v1/sessions/{sessionId}/stream
+  protocolVersion: '1'
+  authentication:
+    transport: WebSocket subprotocol
+    offeredSubprotocols: [mt.v1, mt.token.<sessionToken>]
+    selectedSubprotocol: mt.v1
+    tokenUse: one-time session token, never logged, invalid after disconnect or expiry
+  handshake:
+    - server validates Origin, session token, and protocol version during upgrade
+    - server sends session.ready as the first application frame
+    - client sends hello with protocolVersion and client capabilities
+    - server replies with command.ack for hello before accepting controls or audio
+  limits:
+    jsonFrameBytes: 16384
+    binaryFrameBytes: 960
+    binaryFrameDurationMs: 20
+    maxClientBufferedAmountBytes: 1048576
+    overloadPolicy: pause capture and emit a backpressure event; never silently drop acknowledged audio
+  clientProtocolSchema: ./websocket-client.schema.json
+  serverProtocolSchema: ./websocket-server.schema.json
+  textFrames:
+    client:
+      - type: hello
+        protocolVersion: '1'
+        commandId: string
+      - type: session.control
+        commandId: string
+        action: start | pause | resume | stop
+      - type: utterance.start
+        commandId: string
+        utteranceId: string
+        direction: en-to-zh | zh-to-en
+      - type: utterance.commit
+        commandId: string
+        utteranceId: string
+      - type: direction.set
+        commandId: string
+        direction: en-to-zh | zh-to-en
+      - type: translation.retry
+        commandId: string
+        entryId: string
+        sourceText: string
+        sourceLanguage: en | zh
+        targetLanguage: en | zh
+        context: array[string]
+    server:
+      - type: session.ready
+        sessionId: string
+        protocolVersion: '1'
+        expiresAt: date-time
+      - type: command.ack
+        commandId: string
+        accepted: boolean
+        state: string
+        effectiveDirection: en-to-zh | zh-to-en
+        errorCode: string | null
+      - type: session.state
+        state: configuring | connecting | running | paused | stopping | completed
+      - type: transcript.interim
+        utteranceId: string
+        providerItemId: string
+        revision: integer
+        text: string
+      - type: transcript.final
+        utteranceId: string
+        providerItemId: string
+        elapsedMs: integer
+        committedAtMs: integer
+        sourceLanguage: en | zh
+        targetLanguage: en | zh
+        text: string
+      - type: translation.pending
+        entryId: string
+        targetLanguage: en | zh
+      - type: translation.completed
+        entryId: string
+        targetLanguage: en | zh
+        text: string
+      - type: translation.failed
+        entryId: string
+        retryable: boolean
+        code: string
+        message: string
+      - type: backpressure
+        bufferedAmountBytes: integer
+        action: pause-capture | resume-capture
+      - type: error
+        retryable: boolean
+        code: string
+        message: string
+      - type: session.completed
+        reason: stopped | expired | disconnected | error
+  binaryFrames:
+    clientToServer: Raw little-endian signed 16-bit mono PCM at 24000 Hz, exactly one 20 ms frame per binary message.
+    serverToClient: None.
